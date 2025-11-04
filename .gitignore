@@ -1,0 +1,8 @@
+*.png
+/data
+*.ipynb
+.env
+.terraform*
+terraform*
+model.joblib
+model.tar.gz
