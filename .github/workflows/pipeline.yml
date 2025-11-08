@@ -53,7 +53,7 @@ jobs:
     - name: Get Terraform output
       id: tf_output
       run: |
-        ECR_REPOSITORY=$(terraform output -raw mnist-repo-name)
+        ECR_REPOSITORY=$(terraform -chdir=terraform/ecr output -raw mnist-repo-name)
         echo "ECR_REPOSITORY=$ECR_REPOSITORY" >> $GITHUB_OUTPUT
     - name: Print ECR repo name
       run: echo "ECR name = ${{ steps.tf_output.outputs.ECR_REPOSITORY }}"
