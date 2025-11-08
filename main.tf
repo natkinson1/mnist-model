@@ -83,11 +83,27 @@ data "aws_iam_policy_document" "mnist_model_role" {
             identifiers = ["sagemaker.amazonaws.com"]
         }
     }
+}
+
+data "aws_iam_policy_document" "ecr_pull_policy" {
     statement {
-        effect = "Allow"
-        actions = ["ecr:*"]
+        sid = "AllowECRPull"
+
+        actions = [
+            "ecr:GetAuthorizationToken",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchGetImage",
+        ]
+
         resources = ["*"]
     }
+}
+
+resource "aws_iam_role_policy" "mnist_ecr_pull" {
+  name   = "mnist-ecr-pull-policy"
+  role   = aws_iam_role.mnist_user.id
+  policy = data.aws_iam_policy_document.ecr_pull_policy.json
 }
 
 output "mnist-repo-name" {
