@@ -75,14 +75,19 @@ resource "aws_iam_role" "mnist_user" {
 }
 
 data "aws_iam_policy_document" "mnist_model_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
+    statement {
+        actions = ["sts:AssumeRole"]
 
-    principals {
-      type        = "Service"
-      identifiers = ["sagemaker.amazonaws.com"]
+        principals {
+            type        = "Service"
+            identifiers = ["sagemaker.amazonaws.com"]
+        }
     }
-  }
+    statement {
+        effect = "Allow"
+        actions = ["ecr:*"]
+        resources = ["*"]
+    }
 }
 
 output "mnist-repo-name" {
