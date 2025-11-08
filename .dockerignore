@@ -1,7 +1,8 @@
 *.ipynb
 data/
 .terraform*
-terraform*
+terraform.lock.hcl
+terraform.tfstate
 *.png
 .env
 __pycache__

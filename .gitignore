@@ -3,7 +3,9 @@
 *.ipynb
 .env
 .terraform*
-terraform*
+terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
 model.joblib
 model.tar.gz
 __pycache__
