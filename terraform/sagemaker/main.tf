@@ -38,7 +38,7 @@ resource "aws_sagemaker_endpoint_configuration" "mnist-model-endpoint-config" {
         variant_name = "v1"
         model_name = aws_sagemaker_model.mnist-model.name
         initial_instance_count = 1
-        instance_type = "m4.xlarge"
+        instance_type = "ml.m4.xlarge"
         # serverless_config {
         #     max_concurrency = 1
         #     memory_size_in_mb = 1024
