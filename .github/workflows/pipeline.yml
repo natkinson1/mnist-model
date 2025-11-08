@@ -1,4 +1,4 @@
-name: "Run Tests and Deploy"
+name: "Run Tests and Deploy Model Endpoint"
 
 on:
   push:
