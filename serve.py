@@ -6,7 +6,7 @@ import traceback
 from flask_cors import CORS
 
 app = flask.Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
+CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173", "https://www.nikhilatkinson.dev/"])
 
 logging.basicConfig(
     # filename="app.log",
@@ -42,4 +42,6 @@ def invoke():
         )
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    port = 8080
+    logger.info(f"Starting server on port: {port}")
+    app.run(host="0.0.0.0", port=port)

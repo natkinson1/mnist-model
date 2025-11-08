@@ -3,6 +3,7 @@ data/
 .terraform*
 terraform.lock.hcl
 terraform.tfstate
+terraform.tfstate.backup
 *.png
 .env
 __pycache__
