@@ -2,14 +2,16 @@ import joblib
 import os
 import numpy as np
 from scipy.ndimage import binary_dilation, gaussian_filter
+from skimage.transform import resize
 
 def model_fn(model_dir):
     model_path = os.path.join(model_dir, "model.joblib")
     return joblib.load(model_path)
 
 def predict_fn(input_data, model):
-    input_data = resize_drawing(input_data)
-    return model.predict(input_data)
+    output_data = resize_drawing(input_data)
+    output_data.reshape(1, -1)
+    return model.predict(output_data)
 
 def input_fn(request_body, request_content_type):
     if request_content_type == "text/csv":
@@ -17,15 +19,15 @@ def input_fn(request_body, request_content_type):
     else:
         raise ValueError(f"Unsupported content type: {request_content_type}")
 
-def output_fn(prediction, content_type):
-    return ",".join(str(p) for p in prediction)
+def output_fn(prediction):
+    return str(prediction[0])
 
 def thicken_lines_scipy(img, thickness=1):
     # Convert to binary
     binary = img > 0
     # Apply dilation
-    output = binary_dilation(binary, iterations=thickness)
-    output = gaussian_filter(output * 255, sigma=0.5)
+    # output = binary_dilation(binary, iterations=thickness)
+    output = gaussian_filter(binary * 255, sigma=0.45)
     return output
 
 def resize_drawing(drawing):
@@ -35,15 +37,14 @@ def resize_drawing(drawing):
 
     line_list = drawing["lines"]
 
-    output = np.zeros((28,28))
+    output = np.zeros((height,width))
 
     for line in line_list:
         points_list = line["points"]
         for point in points_list:
-            x_idx = int((point["x"] / width) * 28)
-            y_idx = int((point["y"] / height) * 28)
+            x_idx = int((point["x"] / width) * height)
+            y_idx = int((point["y"] / height) * width)
             output[y_idx, x_idx] += 1
 
-    output = thicken_lines_scipy(output)
-    output = output.reshape(1,-1)
+    output = resize(output, (28,28))
     return output

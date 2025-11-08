@@ -6,3 +6,5 @@
 terraform*
 model.joblib
 model.tar.gz
+__pycache__
+*.log

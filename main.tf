@@ -44,6 +44,47 @@ resource "aws_ecr_repository" "mnist-repo" {
     name = "mnist-repo"
 }
 
+resource "aws_sagemaker_model" "mnist-model" {
+    name = "mnist-model"
+    execution_role_arn = aws_iam_role.mnist_user.arn
+
+    primary_container {
+        image = aws_ecr_repository.mnist-repo.repository_url
+    }
+}
+
+resource "aws_sagemaker_endpoint" "mnist-model-endpoint" {
+    name = "mnist-model-endpoint"
+    endpoint_config_name = aws_sagemaker_endpoint_configuration.mnist-model-endpoint-config.name
+}
+
+resource "aws_sagemaker_endpoint_configuration" "mnist-model-endpoint-config" {
+    name = "mnist-model-endpoint-config"
+    production_variants {
+        variant_name = "v1"
+        model_name = aws_sagemaker_model.mnist-model.name
+        serverless_config {
+            max_concurrency = 1
+            memory_size_in_mb = 1024
+        }
+    }
+}
+
+resource "aws_iam_role" "mnist_user" {
+  assume_role_policy = data.aws_iam_policy_document.mnist_model_role.json
+}
+
+data "aws_iam_policy_document" "mnist_model_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["sagemaker.amazonaws.com"]
+    }
+  }
+}
+
 output "mnist-repo-name" {
     description = "mnist ECR name"
     value = aws_ecr_repository.mnist-repo.name

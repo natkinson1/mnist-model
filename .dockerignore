@@ -1,0 +1,8 @@
+*.ipynb
+data/
+.terraform*
+terraform*
+*.png
+.env
+__pycache__
+*.log
