@@ -39,3 +39,13 @@ resource "aws_s3_bucket_versioning" "terraform-mnist-state041125-versioning" {
         status = "Enabled"
     }
 }
+
+resource "aws_s3_bucket" "mnist-model-bucket09112025" {
+    bucket = "mnist-model-bucket-09112025"
+    force_destroy = true
+}
+
+output "mnist-bucket-name" {
+    description = "Name of bucket to store model artifacts"
+    value = aws_s3_bucket.mnist-model-bucket09112025.name
+}

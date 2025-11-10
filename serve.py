@@ -1,3 +1,4 @@
+import os
 import flask
 import logging
 import json
@@ -15,7 +16,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-model = model_fn('./')
+model = model_fn(os.getenv("SM_MODEL_DIR", "./"))
 
 @app.route('/ping', methods=["GET"])
 def ping():
@@ -42,6 +43,6 @@ def invoke():
         )
 
 if __name__ == '__main__':
-    port = 8080
+    port = os.getenv("SM_PORT", 8080)
     logger.info(f"Starting server on port: {port}")
     app.run(host="0.0.0.0", port=port)
