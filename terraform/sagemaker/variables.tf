@@ -4,6 +4,6 @@ variable "image_uri" {
 }
 
 variable "model_data_url" {
-    description = "Location of model artifact"
+    description = "Directory of model artifact"
     type = string
 }
