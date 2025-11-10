@@ -45,13 +45,6 @@ resource "aws_sagemaker_endpoint_configuration" "mnist-model-endpoint-config" {
         #     memory_size_in_mb = 1024
         # }
     }
-    data_capture_config {
-        initial_sampling_percentage = 100
-        destination_s3_uri = "s3://terraform-mnist-state041125/logs/"
-        capture_options {
-            capture_mode = "InputAndOutput"
-        }
-    }
 }
 
 resource "aws_iam_role" "mnist_user" {
