@@ -32,7 +32,7 @@ jobs:
   deploy-s3-infra:
     runs-on: ubuntu-latest
     outputs:
-      s3_model_dir: ${{ steps.tf_s3_output.outputs.s3_model_artifact_dir}}
+      s3_model_artifact_dir: ${{ steps.tf_s3_output.outputs.s3_model_artifact_dir}}
     steps:
     - name: Checkout
       uses: actions/checkout@v5
@@ -125,5 +125,6 @@ jobs:
       run: >
         terraform -chdir=terraform/sagemaker apply \
         -auto-approve \
-        -var="image_uri=${{ needs.deploy-ecr-model-container.outputs.image }} model_data_url=${{ needs.deploy-s3-infra.outputs.s3_model_dir}}"
+        -var="image_uri=${{ needs.deploy-ecr-model-container.outputs.image }}" \
+        -var="model_data_url=${{ needs.deploy-s3-infra.outputs.s3_model_artifact_dir }}"
 
