@@ -47,5 +47,5 @@ resource "aws_s3_bucket" "mnist-model-bucket09112025" {
 
 output "mnist-bucket-name" {
     description = "Name of bucket to store model artifacts"
-    value = aws_s3_bucket.mnist-model-bucket09112025.name
+    value = aws_s3_bucket.mnist-model-bucket09112025.id
 }

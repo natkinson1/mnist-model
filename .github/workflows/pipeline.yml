@@ -53,6 +53,7 @@ jobs:
     - name: Get Terraform output
       id: tf_s3_output
       run: |
+        terraform -chdir=terraform/s3 output -raw mnist-bucket-name
         S3_MODEL_ARTIFACT_DIR=$(terraform -chdir=terraform/s3 output -raw mnist-bucket-name)
         echo "s3_model_artifact_dir=s3://$S3_MODEL_ARTIFACT_DIR/model-artifacts/" >> $GITHUB_OUTPUT
     - name: Push model artifact to s3
