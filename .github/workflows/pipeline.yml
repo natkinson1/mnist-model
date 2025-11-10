@@ -119,7 +119,7 @@ jobs:
     - name: Output Image Tag
       run: echo "${{ needs.deploy-ecr-model-container.outputs.image }}"
     - name: Output s3 model artifact dir
-      run: echo "${{ needs.deploy-s3-infra.outputs.s3_model_artifact_dir }}
+      run: echo "${{ needs.deploy-s3-infra.outputs.s3_model_artifact_dir }}"
     - name: Run Terraform Init
       run: terraform -chdir=terraform/sagemaker init
     - name: Run Terraform apply
