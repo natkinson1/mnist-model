@@ -1,4 +1,5 @@
 import os
+import sys
 import flask
 import logging
 import json
@@ -15,6 +16,10 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
 logger = logging.getLogger(__name__)
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.INFO)
+
+logger.addHandler(console_handler)
 
 MODEL_DIR = os.getenv("SM_MODEL_DIR", ".")
 logger.info(f"Model directory: {MODEL_DIR}")
