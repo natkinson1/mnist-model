@@ -34,7 +34,7 @@ def invoke():
     try:
         logger.info(f"Model directory: {MODEL_DIR}")
         logger.info(f"Files in /opt/ml/model: {os.listdir("/opt/ml/model")}")
-        model = model_fn(MODEL_DIR)
+        model = model_fn("/opt/ml/model")
         data = flask.request.get_json()
 
         prediction = predict_fn(data, model)
