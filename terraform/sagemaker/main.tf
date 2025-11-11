@@ -71,7 +71,8 @@ data "aws_iam_policy_document" "ecr_pull_policy" {
             "ecr:BatchCheckLayerAvailability",
             "ecr:GetDownloadUrlForLayer",
             "ecr:BatchGetImage",
-            "s3:*"
+            "s3:*",
+            "logs:*"
         ]
 
         resources = ["*"]

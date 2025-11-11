@@ -8,4 +8,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
+ENV FLASK_ENV=development
+ENV PYTHONUNBUFFERED=1
+
 ENTRYPOINT [ "python", "serve.py" ]
