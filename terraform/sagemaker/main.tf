@@ -38,12 +38,12 @@ resource "aws_sagemaker_endpoint_configuration" "mnist-model-endpoint-config" {
     production_variants {
         variant_name = "v1"
         model_name = aws_sagemaker_model.mnist-model.name
-        initial_instance_count = 1
-        instance_type = "ml.m4.xlarge"
-        # serverless_config {
-        #     max_concurrency = 1
-        #     memory_size_in_mb = 1024
-        # }
+        # initial_instance_count = 1
+        # instance_type = "ml.m4.xlarge"
+        serverless_config {
+            max_concurrency = 1
+            memory_size_in_mb = 1024
+        }
     }
 }
 
@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "ecr_pull_policy" {
             "ecr:BatchCheckLayerAvailability",
             "ecr:GetDownloadUrlForLayer",
             "ecr:BatchGetImage",
-            "s3:GetObject"
+            "s3:*"
         ]
 
         resources = ["*"]

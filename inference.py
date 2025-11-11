@@ -10,8 +10,7 @@ def model_fn(model_dir):
 
 def predict_fn(input_data, model):
     output_data = resize_drawing(input_data)
-    output_data.reshape(1, -1)
-    return model.predict(output_data)
+    return model.predict(output_data.reshape(1, -1))
 
 def input_fn(request_body, request_content_type):
     if request_content_type == "text/csv":
@@ -21,14 +20,6 @@ def input_fn(request_body, request_content_type):
 
 def output_fn(prediction):
     return str(prediction[0])
-
-def thicken_lines_scipy(img, thickness=1):
-    # Convert to binary
-    binary = img > 0
-    # Apply dilation
-    # output = binary_dilation(binary, iterations=thickness)
-    output = gaussian_filter(binary * 255, sigma=0.45)
-    return output
 
 def resize_drawing(drawing):
 
