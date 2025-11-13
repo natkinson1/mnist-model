@@ -84,3 +84,8 @@ resource "aws_iam_role_policy" "mnist_ecr_pull" {
   role   = aws_iam_role.mnist_user.id
   policy = data.aws_iam_policy_document.ecr_pull_policy.json
 }
+
+output "sagemaker-model-endpoint-name" {
+    description = "The sagemaker endpoint name"
+    value = aws_sagemaker_endpoint.mnist-model-endpoint.name
+}

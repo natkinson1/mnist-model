@@ -14,34 +14,34 @@ terraform {
 }
 
 resource "aws_iam_role" "apigw_sagemaker_role" {
-  name = "apigw_sagemaker_invoke_role"
+    name = "apigw_sagemaker_invoke_role"
 
-  assume_role_policy = jsonencode({
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "apigateway.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
+    assume_role_policy = jsonencode({
+        Statement = [
+            {
+                Effect = "Allow"
+                Principal = {
+                    Service = "apigateway.amazonaws.com"
+                }
+                Action = "sts:AssumeRole"
+            }
+        ]
+    })
 }
 
 resource "aws_iam_role_policy" "apigw_sagemaker_policy" {
-  name   = "apigw-sagemaker-policy"
-  role   = aws_iam_role.apigw_sagemaker_role.id
+    name   = "apigw-sagemaker-policy"
+    role   = aws_iam_role.apigw_sagemaker_role.id
 
-  policy = jsonencode({
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "sagemaker:InvokeEndpoint"
-        Resource = "arn:aws:sagemaker:ap-southeast-2:111029214708:endpoint/mnist-model-endpoint"
-      }
-    ]
-  })
+    policy = jsonencode({
+        Statement = [
+            {
+                Effect = "Allow"
+                Action = "sagemaker:InvokeEndpoint"
+                Resource = "arn:aws:sagemaker:ap-southeast-2:111029214708:endpoint/mnist-model-endpoint"
+            }
+        ]
+    })
 }
 
 resource "aws_api_gateway_rest_api" "mnist-rest-api" {
@@ -59,6 +59,7 @@ resource "aws_api_gateway_method" "mnist-gateway-method" {
     http_method   = "POST"
     resource_id   = aws_api_gateway_resource.mnist-api-gateway-resource.id
     rest_api_id   = aws_api_gateway_rest_api.mnist-rest-api.id
+    api_key_required = true
 }
 
 resource "aws_api_gateway_integration" "mnist-api-integration" {
@@ -67,9 +68,11 @@ resource "aws_api_gateway_integration" "mnist-api-integration" {
     rest_api_id = aws_api_gateway_rest_api.mnist-rest-api.id
     integration_http_method = "POST"
     type = "AWS"
-    # uri = "arn:aws:sagemaker:ap-southeast-2:111029214708:endpoint/mnist-model-endpoint/invocations"
     uri = "arn:aws:apigateway:${var.aws-region}:runtime.sagemaker:path/endpoints/mnist-model-endpoint/invocations"
+    # uri = "arn:aws:apigateway:${var.aws-region}:runtime.sagemaker:path/endpoints/${var.sagemaker-endpoint-name}/invocations"
     credentials = aws_iam_role.apigw_sagemaker_role.arn
+    passthrough_behavior = "WHEN_NO_MATCH"
+
 }
 
 resource "aws_api_gateway_deployment" "mnist-api-deployment" {
@@ -80,7 +83,7 @@ resource "aws_api_gateway_deployment" "mnist-api-deployment" {
 resource "aws_api_gateway_stage" "mnist-rest-api-stage" {
     deployment_id = aws_api_gateway_deployment.mnist-api-deployment.id
     rest_api_id   = aws_api_gateway_rest_api.mnist-rest-api.id
-    stage_name    = "predict"
+    stage_name    = "prod"
 }
 
 resource "aws_api_gateway_method_response" "mnist-method-response" {
@@ -89,25 +92,72 @@ resource "aws_api_gateway_method_response" "mnist-method-response" {
     http_method = aws_api_gateway_method.mnist-gateway-method.http_method
     status_code = "200"
 
-    response_models = {
-        "application/json" = "Empty"
-    }
+    # response_models = {
+    #     "application/json" = "Empty"
+    # }
 }
 
 resource "aws_api_gateway_integration_response" "success" {
     rest_api_id = aws_api_gateway_rest_api.mnist-rest-api.id
     resource_id = aws_api_gateway_resource.mnist-api-gateway-resource.id
     http_method = aws_api_gateway_method.mnist-gateway-method.http_method
-    status_code = "200"
+    status_code = aws_api_gateway_method_response.mnist-method-response.status_code
 
+    # response_templates = {
+    #     "application/json" = "$input.body"
+    # }
+}
+
+resource "aws_api_gateway_integration_response" "error" {
+    rest_api_id = aws_api_gateway_rest_api.mnist-rest-api.id
+    resource_id = aws_api_gateway_resource.mnist-api-gateway-resource.id
+    http_method = aws_api_gateway_method.mnist-gateway-method.http_method
+    status_code = "500"
+    selection_pattern = "5\\d{2}"
     response_templates = {
-        "application/json" = "$input.body"
+      "application/json" = "{\"error\": \"$input.path('$.errorMessage')\"}"
     }
 }
 
+resource "aws_api_gateway_api_key" "mnist-api-key" {
+    name = "mnist-api-key"
+    description = "API key to be used to access mnist-predictions."
+    enabled = true
+}
 
+resource "aws_api_gateway_usage_plan" "mnist-api-usage-plan" {
+    name = "mnist-usage-plan"
+    description = "mnist rest api usage plan."
+
+    api_stages {
+        api_id = aws_api_gateway_rest_api.mnist-rest-api.id
+        stage = aws_api_gateway_stage.mnist-rest-api-stage.stage_name
+    }
+
+    throttle_settings {
+        burst_limit = 5
+        rate_limit = 2
+    }
+
+    quota_settings {
+        limit = 100
+        period = "DAY"
+    }
+}
+
+resource "aws_api_gateway_usage_plan_key" "mnist-usage-plan-key" {
+    key_id = aws_api_gateway_api_key.mnist-api-key.id
+    key_type = "API_KEY"
+    usage_plan_id = aws_api_gateway_usage_plan.mnist-api-usage-plan.id
+}
 
 output "invoke_url" {
     description = "Rest API URL"
     value = aws_api_gateway_stage.mnist-rest-api-stage.invoke_url
+}
+
+output "api-key" {
+    description = "API to be used to access rest api."
+    value = aws_api_gateway_api_key.mnist-api-key.value
+    sensitive = true
 }

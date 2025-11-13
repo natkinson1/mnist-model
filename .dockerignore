@@ -4,6 +4,9 @@ data/
 terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
+model.keras.tar.gz
+model.tar.gz
+model.joblib
 *.png
 .env
 __pycache__

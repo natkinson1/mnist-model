@@ -21,9 +21,7 @@ console_handler.setLevel(logging.INFO)
 
 logger.addHandler(console_handler)
 
-MODEL_DIR = os.getenv("SM_MODEL_DIR", ".")
-logger.info(f"Model directory: {MODEL_DIR}")
-logger.info(f"Files in /opt/ml/model: {os.listdir("/opt/ml/model")}")
+model = model_fn("/opt/ml/model")
 
 @app.route('/ping', methods=["GET"])
 def ping():
@@ -32,16 +30,14 @@ def ping():
 @app.route('/invocations', methods=["POST"])
 def invoke():
     try:
-        logger.info(f"Model directory: {MODEL_DIR}")
-        logger.info(f"Files in /opt/ml/model: {os.listdir("/opt/ml/model")}")
-        model = model_fn("/opt/ml/model")
+        
         data = flask.request.get_json()
 
         prediction = predict_fn(data, model)
         output = output_fn(prediction)
         logger.info(f"Made prediction: {output}")
 
-        return flask.Response(response=json.dumps({"prediction" : output}), status=200, mimetype="application/json")
+        return flask.Response(response=json.dumps({"prediction" : str(output)}), status=200, mimetype="application/json")
     except Exception as e:
         error_message = f"Error during prediction: {str(e)}\n{traceback.format_exc()}"
         print(error_message)
@@ -52,7 +48,7 @@ def invoke():
             mimetype='application/json'
         )
 
-if __name__ == '__main__':
-    port = os.getenv("SM_PORT", 8080)
-    logger.info(f"Starting server on port: {port}")
-    app.run(host="0.0.0.0", port=port, debug=True)
+# if __name__ == '__main__':
+#     port = os.getenv("SM_PORT", 8080)
+#     logger.info(f"Starting server on port: {port}")
+#     app.run(host="0.0.0.0", port=port, debug=True)

@@ -7,5 +7,6 @@ terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.backup
 model.joblib
+model.keras
 __pycache__
 *.log

@@ -11,4 +11,6 @@ COPY . .
 ENV FLASK_ENV=development
 ENV PYTHONUNBUFFERED=1
 
-ENTRYPOINT [ "python", "serve.py" ]
+ENV TF_CPP_MIN_LOG_LEVEL=3
+
+ENTRYPOINT [ "sh", "entrypoint.sh" ]
