@@ -1,4 +1,3 @@
-import os
 import sys
 import flask
 import logging
@@ -11,7 +10,6 @@ app = flask.Flask(__name__)
 CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173", "https://www.nikhilatkinson.dev/"])
 
 logging.basicConfig(
-    # filename="app.log",
     level=logging.DEBUG,
     format='%(asctime)s [%(levelname)s] %(message)s'
 )
@@ -21,7 +19,8 @@ console_handler.setLevel(logging.INFO)
 
 logger.addHandler(console_handler)
 
-model = model_fn("/opt/ml/model")
+# model = model_fn("/opt/ml/model")
+model = model_fn(".")
 
 @app.route('/ping', methods=["GET"])
 def ping():
