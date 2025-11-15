@@ -42,7 +42,7 @@ resource "aws_sagemaker_endpoint_configuration" "mnist-model-endpoint-config" {
         # instance_type = "ml.m4.xlarge"
         serverless_config {
             max_concurrency = 1
-            memory_size_in_mb = 1024 * 6
+            memory_size_in_mb = 1024 * 3
         }
     }
 }

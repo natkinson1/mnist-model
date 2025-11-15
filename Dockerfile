@@ -8,7 +8,10 @@ COPY ./requirements.txt .
 RUN apt-get remove -y python3-blinker || true
 RUN pip install -r requirements.txt
 
-COPY . .
+COPY ./app.py .
+COPY ./inference.py .
+COPY ./entrypoint.sh .
+# COPY ./model.keras .
 
 ENV FLASK_ENV=development
 ENV PYTHONUNBUFFERED=1

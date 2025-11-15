@@ -7,6 +7,8 @@ terraform.tfstate.backup
 model.keras.tar.gz
 model.tar.gz
 model.joblib
+terraform/
+tests/
 *.png
 .env
 __pycache__
