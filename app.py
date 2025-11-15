@@ -19,8 +19,8 @@ console_handler.setLevel(logging.INFO)
 
 logger.addHandler(console_handler)
 
-# model = model_fn("/opt/ml/model")
-model = model_fn(".")
+model = model_fn("/opt/ml/model")
+# model = model_fn(".")
 
 @app.route('/ping', methods=["GET"])
 def ping():
