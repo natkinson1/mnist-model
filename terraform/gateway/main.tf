@@ -78,6 +78,10 @@ resource "aws_api_gateway_integration" "mnist-api-integration" {
 resource "aws_api_gateway_deployment" "mnist-api-deployment" {
     depends_on = [aws_api_gateway_integration.mnist-api-integration]
     rest_api_id = aws_api_gateway_rest_api.mnist-rest-api.id
+
+    lifecycle {
+        create_before_destroy = true
+    }
 }
 
 resource "aws_api_gateway_stage" "mnist-rest-api-stage" {
