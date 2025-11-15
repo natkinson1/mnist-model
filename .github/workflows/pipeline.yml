@@ -129,7 +129,7 @@ jobs:
         terraform -chdir=terraform/sagemaker apply \
         -auto-approve \
         -var="image_uri=${{ needs.deploy-ecr-model-container.outputs.image }}" \
-        -var="model_data_url=${{ needs.deploy-s3-infra.outputs.s3_model_artifact_dir }}/model.tar.gz" \
+        -var="model_data_url=${{ needs.deploy-s3-infra.outputs.s3_model_artifact_dir }}/model.keras.tar.gz" \
         -replace="aws_sagemaker_endpoint.mnist-model-endpoint"
     - name: Get Sagemaker Model Endpoint
       id: get-sm-endpoint-name
